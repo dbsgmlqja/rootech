@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label":   "CMake: Configure (Debug)",
+            "type":    "shell",
+            "command": "cmake",
+            "args":    ["--preset", "windows-clang-debug"],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label":   "CMake: Build All (Debug)",
+            "type":    "shell",
+            "command": "cmake",
+            "args":    ["--build", "build/windows-clang-debug", "--parallel"],
+            "problemMatcher": ["$gcc"],
+            "group":   { "kind": "build", "isDefault": true },
+            "dependsOn": "CMake: Configure (Debug)"
+        },
+        {
+            "label":   "CTest: Run All Tests",
+            "type":    "shell",
+            "command": "ctest",
+            "args":    ["--preset", "debug"],
+            "problemMatcher": [],
+            "group":   { "kind": "test", "isDefault": true },
+            "dependsOn": "CMake: Build All (Debug)"
+        },
+        {
+            "label":   "clang-tidy: Run on current file",
+            "type":    "shell",
+            "command": "clang-tidy",
+            "args":    [
+                "-p", "${workspaceFolder}/build/windows-clang-debug",
+                "${file}"
+            ],
+            "problemMatcher": ["$gcc"]
+        },
+        {
+            "label":   "clang-format: Format current file",
+            "type":    "shell",
+            "command": "clang-format",
+            "args":    ["-i", "${file}"],
+            "problemMatcher": []
+        },
+        {
+            "label":   "Clean build directory",
+            "type":    "shell",
+            "command": "cmake",
+            "args":    ["-E", "rm", "-rf", "build"],
+            "problemMatcher": []
+        }
+    ]
+}

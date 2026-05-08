@@ -1,0 +1,41 @@
+{
+    "version": 4,
+    "cmakeMinimumRequired": { "major": 3, "minor": 20, "patch": 0 },
+
+    "configurePresets": [
+        {
+            "name":         "windows-clang-debug",
+            "displayName":  "Windows clang Debug (Ninja)",
+            "description":  "Windows + LLVM clang + Ninja + Debug",
+            "generator":    "Ninja",
+            "binaryDir":    "${sourceDir}/build/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER":             "clang",
+                "CMAKE_BUILD_TYPE":             "Debug",
+                "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+            }
+        },
+        {
+            "name":         "windows-clang-release",
+            "inherits":     "windows-clang-debug",
+            "displayName":  "Windows clang Release (Ninja)",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
+        }
+    ],
+
+    "buildPresets": [
+        { "name": "debug",   "configurePreset": "windows-clang-debug"   },
+        { "name": "release", "configurePreset": "windows-clang-release" }
+    ],
+
+    "testPresets": [
+        {
+            "name":            "debug",
+            "configurePreset": "windows-clang-debug",
+            "output":          { "outputOnFailure": true, "verbosity": "default" },
+            "execution":       { "stopOnFailure": false }
+        }
+    ]
+}

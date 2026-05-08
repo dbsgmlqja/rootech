@@ -1,0 +1,26 @@
+---
+# 임베디드 C 학습용 clang-tidy 설정
+# 너무 많은 경고로 학습이 방해되지 않도록 일부 체크 비활성화
+Checks: >
+  bugprone-*,
+  cert-*,
+  clang-analyzer-*,
+  misc-*,
+  performance-*,
+  portability-*,
+  readability-*,
+  -readability-magic-numbers,
+  -readability-identifier-length,
+  -bugprone-easily-swappable-parameters,
+  -misc-include-cleaner,
+  -cert-dcl37-c,
+  -cert-dcl51-cpp
+
+WarningsAsErrors: ''
+HeaderFilterRegex: '.*\.(h|c)$'
+FormatStyle: file
+CheckOptions:
+  - key:   readability-function-size.LineThreshold
+    value: '120'
+  - key:   readability-function-cognitive-complexity.Threshold
+    value: '25'

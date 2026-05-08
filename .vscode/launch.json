@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name":     "Debug current test (lldb)",
+            "type":     "lldb",
+            "request":  "launch",
+            "program":  "${workspaceFolder}/build/windows-clang-debug/${input:targetName}.exe",
+            "args":     [],
+            "cwd":      "${workspaceFolder}",
+            "preLaunchTask": "CMake: Build All (Debug)"
+        }
+    ],
+    "inputs": [
+        {
+            "id":          "targetName",
+            "type":        "promptString",
+            "description": "실행 파일명 (예: test_bitops)"
+        }
+    ]
+}

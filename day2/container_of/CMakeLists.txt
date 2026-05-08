@@ -1,0 +1,5 @@
+add_executable(test_container_of tests/test_container_of.c src/container_of.c)
+target_include_directories(test_container_of PRIVATE include)
+target_link_libraries(test_container_of PRIVATE week02_common week02_test)
+
+add_test(NAME test_container_of COMMAND test_container_of)

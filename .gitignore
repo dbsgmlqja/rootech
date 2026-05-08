@@ -1,0 +1,16 @@
+# Build artifacts
+build/
+out/
+.cache/
+compile_commands.json
+
+# Editor
+.vs/
+*.swp
+*.swo
+.DS_Store
+
+# Coverage
+*.gcda
+*.gcno
+*.gcov
