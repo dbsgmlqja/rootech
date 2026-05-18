@@ -13,6 +13,7 @@
         "--completion-style=detailed",
         "--function-arg-placeholders",
         "--compile-commands-dir=${workspaceFolder}/build/windows-clang-debug",
+        "--compile-commands-dir=build/windows-clang-debug",
         "--log=info"
     ],
     "clangd.onConfigChanged":                "restart",
@@ -46,3 +47,4 @@
     "editor.tabSize":                        4,
     "editor.insertSpaces":                   true
 }
+

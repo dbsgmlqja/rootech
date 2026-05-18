@@ -12,6 +12,7 @@ typedef struct {
     volatile uint32_t       CR2; /* 0x04 control 2 */
     volatile const uint32_t SR;  /* 0x08 status (read-only) */
     volatile uint32_t       DR;  /* 0x0C data */
+    volatile uint8_t        AA;
 } UartRegs_t;
 
 _Static_assert(sizeof(UartRegs_t) == 16U, "UartRegs_t 크기 가정 위반");

@@ -9,16 +9,63 @@
  * ========================================================================== */
 #include "dispatcher.h"
 
+// 구조체 생성
+
+typedef struct {
+    uint8_t        id;
+    EventHandler_t handler;
+    void          *ctx;
+} Event_t;
+
+Event_t static Event_table[DISPATCHER_MAX_EVENTS * DISPATCHER_MAX_CHAIN_PER_EV];
+// Event_table 생성 : Event_t 안에 구조체를 가리키는 테이블
+
 void dispatcher_init(void) {
     /* TODO */
 }
 
 bool dispatcher_register(uint8_t event_id, EventHandler_t h, void *ctx) {
-    (void)event_id;
-    (void)h;
-    (void)ctx;
+
     /* TODO */
-    return false;
+    /*
+    dispatcher할 event_id, ,callback 함수, *ctx를 등록할 함수
+    1. 최대 4개 callback / 최대 이벤트 32개
+    2. 이벤트 당 최대 4개 콜백 체이닝
+    3. 이벤트 id, h, *ctx 넣기
+    */
+
+    if (event_id >= DISPATCHER_MAX_EVENTS) {
+        return false;
+    }
+
+    if (h == NULL) {
+        return false;
+    }
+
+    uint8_t full_reg = 0;
+
+    for (size_t i; i < (sizeof(Event_table) / sizeof(Event_table[0])); i++) {
+
+        if ((Event_table[i].id == event_id) && (Event_table[i].handler != NULL)) {
+            ++full_reg;
+        }
+
+        if (full_reg >= DISPATCHER_MAX_CHAIN_PER_EV) {
+            return false;
+        }
+    }
+
+    for (size_t i; i < (sizeof(Event_table) / sizeof(Event_table[0])); i++) {
+
+        if (Event_table[i].handler == NULL) {
+            Event_table[i].id      = event_id;
+            Event_table[i].handler = h;
+            Event_table[i].ctx     = ctx;
+        }
+    }
+
+    // for(size_t i ; i < (sizeof(Event_table[])) / (sizeof(Event_table[]))  )
+    // 크기, 길이, 배열 인덱스, 메모리 크기 등에 size_t 사용 : 부호 없는 정수 타입
 }
 
 bool dispatcher_unregister(uint8_t event_id, EventHandler_t h) {
