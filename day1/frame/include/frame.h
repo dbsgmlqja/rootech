@@ -18,7 +18,7 @@
 #define FRAME_SIZE 9U
 
 typedef struct __attribute__((packed)) {
-    uint8_t  stx;   /* always FRAME_STX */
+    uint8_t  stx; /* always FRAME_STX */
     uint8_t  cmd;
     uint16_t seq;   /* big-endian on wire */
     uint32_t value; /* big-endian on wire */
