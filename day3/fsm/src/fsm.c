@@ -7,6 +7,10 @@
  *  - 천이가 일어날 때마다 printf 로 [from]--ev-->[to] 를 출력한다.
  * ========================================================================== */
 #include "fsm.h"
+static State_t idle(Fsm_t *fsm, Event_t ev, uint8_t byte);
+static State_t recv_len(Fsm_t *fsm, Event_t ev, uint8_t byte);
+static State_t recv_payload(Fsm_t *fsm, Event_t ev, uint8_t byte);
+static State_t done(Fsm_t *fsm, Event_t ev, uint8_t byte);
 
 void fsm_init(Fsm_t *fsm) {
 
@@ -19,72 +23,72 @@ void fsm_init(Fsm_t *fsm) {
     /* TODO */
 }
 
+typedef State_t (*Trans_t)(Fsm_t *fsm, Event_t ev, uint8_t byte);
+
+static const Trans_t s_table[ST_MAX][EV_MAX] = {
+    //  EV_BYTE   EV_RESET   EV_MAX
+    [ST_IDLE]         = {idle, done},
+    [ST_RECV_LEN]     = {recv_len, done},
+    [ST_RECV_PAYLOAD] = {recv_payload, done},
+    [ST_DONE]         = {0, done},
+};
+
 void fsm_step(Fsm_t *fsm, Event_t ev, uint8_t byte) {
 
     /* TODO */
+    Trans_t t = s_table[fsm->state][ev];
+    if (t) {
 
-    switch (fsm->state) {
-    case ST_IDLE:
-        if (ev == EV_BYTE) {
-            if (byte == 0x02) {
-                fsm->state = ST_RECV_LEN;
-                printf("ST_IDLE --ev--> ST_RECV_LEN\n");
-            }
-        }
+        State_t next = t(fsm, ev, byte);
 
-        else {
-            fsm->state = ST_IDLE;
-        }
+        printf("%d --%d--> %d\n", fsm->state, ev, next);
 
-        break;
-
-    case ST_RECV_LEN:
-        if (ev == EV_BYTE) {
-            if (byte > FSM_PAYLOAD_MAX) {
-                fsm_init(fsm);
-            }
-            fsm->payload_len = byte;
-            fsm->recv_idx    = 0U;
-            fsm->state       = ST_RECV_PAYLOAD;
-            printf("ST_RECV_LEN --ev--> ST_RECV_PAYLOAD\n");
-        }
-
-        else {
-            fsm->state = ST_IDLE;
-        }
-
-        break;
-
-    case ST_RECV_PAYLOAD:
-        if (ev == EV_BYTE) {
-            fsm->payload[fsm->recv_idx] = byte;
-            fsm->recv_idx++;
-
-            if (fsm->recv_idx >= fsm->payload_len) {
-
-                fsm->state       = ST_DONE;
-                fsm->frame_ready = true;
-                printf("ST_RECV_PAYLOAD --ev--> ST_DONE\n");
-            }
-        }
-
-        else {
-            fsm->state = ST_IDLE;
-        }
-
-        break;
-
-    case ST_DONE:
-        if (ev == EV_RESET) {
-            fsm->state       = ST_MAX;
-            fsm->frame_ready = false;
-            printf("ST_DONE --ev--> ST_IDLE\n");
-        }
-
-        else {
-            fsm->state = ST_IDLE;
-        }
-
-        break;
+        fsm->state = next;
     }
+}
+
+static State_t idle(Fsm_t *fsm, Event_t ev, uint8_t byte) {
+    if (ev == EV_BYTE) {
+        if (byte == 0x02) {
+            return ST_RECV_LEN;
+        }
+    }
+    return ST_IDLE;
+}
+
+static State_t recv_len(Fsm_t *fsm, Event_t ev, uint8_t byte) {
+    if (ev == EV_BYTE) {
+        if (byte > FSM_PAYLOAD_MAX) {
+            return ST_IDLE;
+        }
+
+        fsm->payload_len = byte;
+        fsm->recv_idx    = 0;
+        return ST_RECV_PAYLOAD;
+    }
+    return ST_RECV_LEN;
+}
+
+static State_t recv_payload(Fsm_t *fsm, Event_t ev, uint8_t byte) {
+    if (ev == EV_BYTE) {
+
+        fsm->payload[fsm->recv_idx] = byte;
+        fsm->recv_idx++;
+
+        if (fsm->recv_idx >= fsm->payload_len) {
+
+            fsm->frame_ready = true;
+            return ST_DONE;
+        }
+    }
+    return ST_RECV_PAYLOAD;
+}
+
+static State_t done(Fsm_t *fsm, Event_t ev, uint8_t dyte) {
+    if (ev == EV_RESET) {
+
+        fsm->frame_ready = false;
+        return ST_IDLE;
+    }
+    return ST_DONE;
 }
