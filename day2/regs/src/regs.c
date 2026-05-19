@@ -12,25 +12,23 @@ static UartRegs_t s_uart0_storage; /* PC 시뮬레이션용 */
 UartRegs_t *const UART0 = &s_uart0_storage;
 uint32_t          wait_ready(UartRegs_t *uart);
 
-/*
 void uart_send_byte(UartRegs_t *u, uint8_t b) {
 
-    //(*u).DR = b;
-    TODO: u->DR 에 b 를 쓴다
+    // TODO: u->DR 에 b 를 쓴다
+    (*u).DR = b;
 }
 
 uint8_t uart_recv_byte(UartRegs_t *u) {
-    (void)u;
-    //TODO: u->DR 을 읽어 반환한다
+
+    // TODO: u->DR 을 읽어 반환한다
     return (uint8_t)(*u).DR;
 }
 
 uint32_t uart_get_status(const UartRegs_t *u) {
-    (void)u;
-    //TODO: u->SR 을 반환한다
+
+    // TODO: u->SR 을 반환한다
     return (*u).SR;
 }
-    */
 
 uint32_t wait_ready(UartRegs_t *u) {
 

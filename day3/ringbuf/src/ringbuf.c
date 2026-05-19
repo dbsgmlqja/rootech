@@ -10,38 +10,55 @@
 #include "ringbuf.h"
 
 void rb_init(RingBuf_t *rb) {
-    (void)rb;
+
     /* TODO */
+
+    rb->head = 0;
+    rb->tail = 0;
 }
 
 bool rb_push(RingBuf_t *rb, uint8_t d) {
-    (void)rb;
-    (void)d;
-    /* TODO */
-    return false;
-}
 
-bool rb_pop(RingBuf_t *rb, uint8_t *out) {
-    (void)rb;
-    (void)out;
     /* TODO */
-    return false;
-}
+    uint16_t next = (uint16_t)((rb->head + 1U) & (RB_SIZE - 1U));
+    if (next == rb->tail) {
+        return false;
+    }
+    rb->buf[rb->head] = d;
+    rb->head          = next;
 
-uint16_t rb_size(const RingBuf_t *rb) {
-    (void)rb;
-    /* TODO */
-    return 0U;
-}
-
-bool rb_empty(const RingBuf_t *rb) {
-    (void)rb;
-    /* TODO */
     return true;
 }
 
-bool rb_full(const RingBuf_t *rb) {
-    (void)rb;
+bool rb_pop(RingBuf_t *rb, uint8_t *out) {
+
     /* TODO */
-    return false;
+    if (rb->head == rb->tail) {
+        return false;
+    }
+
+    *out = rb->buf[rb->tail];
+
+    rb->tail = (uint16_t)((rb->tail + 1U) & (RB_SIZE - 1U));
+
+    return true;
+}
+
+uint16_t rb_size(const RingBuf_t *rb) {
+
+    /* TODO */
+    return ((rb->head - rb->tail) & (RB_SIZE - 1U));
+}
+
+bool rb_empty(const RingBuf_t *rb) {
+
+    /* TODO */
+    return (rb->head == rb->tail); // empty, 즉 비어있으면 true
+}
+
+bool rb_full(const RingBuf_t *rb) {
+
+    /* TODO */
+    uint16_t next = (uint16_t)((rb->head + 1U) & (RB_SIZE - 1U));
+    return (next == rb->tail); // full, 즉 가득 찼으면 true
 }
