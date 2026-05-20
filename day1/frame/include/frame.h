@@ -3,8 +3,8 @@
  *
  * 프레임 형식 (네트워크 바이트 오더, big-endian):
  *   +-----+-----+-----+-----+-----+
- *   | STX | CMD | SEQ | VAL | CKSM|
- *   |  1  |  1  |  2  |  4  |  1  |   = 9 bytes
+ *   | STX | CMD | SEQ | VAL | CKSM| -> CRC
+ *   |  1  |  1  |  2  |  4  |  1  | -> 2      =>  10 bytes
  *   +-----+-----+-----+-----+-----+
  * ========================================================================== */
 #ifndef FRAME_H
@@ -15,14 +15,14 @@
 #include <stdint.h>
 
 #define FRAME_STX  0x02U
-#define FRAME_SIZE 9U
+#define FRAME_SIZE 10U
 
 typedef struct __attribute__((packed)) {
     uint8_t  stx; /* always FRAME_STX */
     uint8_t  cmd;
     uint16_t seq;   /* big-endian on wire */
     uint32_t value; /* big-endian on wire */
-    uint8_t  cksm;  /* XOR(cmd, seq high, seq low, value 4 bytes) */
+    uint16_t cksm;  /* XOR(cmd, seq high, seq low, value 4 bytes) */
 } Frame_t;
 
 /* 직렬화: 호스트 엔디언과 무관하게 동일한 9바이트 출력
